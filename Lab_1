@@ -1,0 +1,110 @@
+
+#include <iostream>
+#include <SFML/Graphics.hpp>
+#include <math.h>
+using namespace std;
+using namespace sf;
+#define MaxFrameRate 200
+
+void window_size_inp(int& a, int& b) {                                   // Размеры окна
+    cout << "Enter window width: "; cin >> a;
+    cout << "Enter window lenght: "; cin >> b;
+
+}
+
+void num_of_objects(int& k) {                                           // количество объктов
+    cout << "Enter number of objects:  "; cin >> k;
+}
+
+
+
+
+const Color colorArray[5] = { Color::Cyan,Color::Blue,Color::Green,Color::Red,Color::Yellow };
+const Color color_intersection = Color::Red;
+
+int main()
+{
+    int x1, y1, n;
+    float velocity_x[10], velocity_y[10], velocity_ang[10];
+    Color main_color[10];
+
+
+    window_size_inp(x1, y1);
+    num_of_objects(n);
+
+
+    for (int i = 0; i < n; i++) { velocity_x[i] = 2; velocity_y[i] = 2; velocity_ang[i] = rand() % 4 + 1; }
+
+    srand(time(NULL));
+
+
+
+
+    CircleShape* triangle = new CircleShape[n];
+
+    for (int i = 0; i < n; i++) {
+
+
+        triangle[i].setRadius(rand() % 100 + 10);
+        triangle[i].setPointCount(3);
+        triangle[i].setFillColor(colorArray[rand() % 5]);
+        triangle[i].setPosition(rand() % 300 + 150, rand() % 300 + 150);
+        triangle[i].setOrigin(triangle[i].getRadius() , triangle[i].getRadius() );
+        main_color[i] = triangle[i].getFillColor();
+    }
+
+
+
+    RenderWindow window(VideoMode(x1, y1), "Animation");
+    window.setFramerateLimit(MaxFrameRate);                   // Установка скорости обновления окна
+
+
+
+
+    while (window.isOpen())                                   // Цикл бесконечной анимации пока окно window не будет закрыто
+    {
+        Event event;                                          // Создается событие event (объект класса Event)
+        while (window.pollEvent(event))
+        {
+            if (event.type == Event::Closed)                  // Если если состояние объекта event закрыто, то закрывается и окно window
+                window.close();
+        }
+        window.clear();
+        for (int i = 0; i < n; i++) {
+
+           float ax=triangle[i].getPosition().x,ay= triangle[i].getPosition().y;
+
+            triangle[i].move(velocity_x[i], velocity_y[i]);
+            triangle[i].rotate(velocity_ang[i]);
+
+
+            if ((triangle[i].getPosition().x + velocity_x[i] > x1 - 2 * triangle[i].getRadius()) || (triangle[i].getPosition().x + velocity_x[i] < 0))
+                velocity_x[i] = -velocity_x[i];
+            if ((triangle[i].getPosition().y + velocity_y[i] > y1 - 2 * triangle[i].getRadius()) || (triangle[i].getPosition().y + velocity_y[i] < 0))
+                velocity_y[i] = -velocity_y[i];
+
+            if ((triangle[i].getPosition().x + velocity_x[i] == x1 - 2 * triangle[i].getRadius()) || (triangle[i].getPosition().x + velocity_x[i] == 0)) { velocity_x[i]++; }
+            if ((triangle[i].getPosition().y + velocity_y[i] == y1 - 2 * triangle[i].getRadius()) || (triangle[i].getPosition().y + velocity_y[i] == 0)) { velocity_y[i]++; }
+
+           for (int j = 0; j < n; j++) {
+                if (j != i) {
+                    
+                    float bx = triangle[j].getPosition().x, by = triangle[j].getPosition().y;
+                    
+                    if () < (triangle[i].getRadius() + triangle[j].getRadius()))
+                    {
+                        triangle[i].setFillColor(color_intersection); triangle[j].setFillColor(color_intersection);
+                    }
+                    else { triangle[i].setFillColor(main_color[i]); triangle[j].setFillColor(main_color[j]); }
+                }
+          } 
+
+  
+            window.draw(triangle[i]);
+        }
+        window.display();
+
+    }
+
+    return 0;
+}
